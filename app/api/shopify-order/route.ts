@@ -47,6 +47,24 @@ export async function POST(req: Request) {
     ordered_at: o.created_at || null,
   }
 
+  // One route, two jobs, decided by the Shopify topic header:
+  //  • orders/create (or no topic) → save the new order + fire the instant alert.
+  //  • any update event (e.g. orders/fulfilled, orders/updated) → just refresh the
+  //    status so the 3-day nudge stops chasing a shipped order. NO alert.
+  // This means adding an "Order fulfillment" webhook later needs zero code changes.
+  const topic = (req.headers.get('x-shopify-topic') || '').toLowerCase()
+  const isCreate = topic === '' || topic === 'orders/create'
+
+  if (!isCreate) {
+    const { error } = await supabase
+      .from('shopify_orders')
+      .update({ fulfillment_status: row.fulfillment_status, financial_status: row.financial_status })
+      .eq('shop_domain', row.shop_domain)
+      .eq('order_id', row.order_id)
+    if (error) console.error('[shopify-order] status update failed:', error.message)
+    return Response.json({ ok: true })
+  }
+
   // Save. Ignore duplicates (Shopify retries the same webhook on any non-2xx / timeout).
   const { error } = await supabase
     .from('shopify_orders')

@@ -4,6 +4,7 @@
     { "path": "/api/jarvis-oyen", "schedule": "0 9 * * *" },
     { "path": "/api/gmail-brief", "schedule": "0 0 * * *" },
     { "path": "/api/gmail-brief", "schedule": "0 10 * * *" },
-    { "path": "/api/shopify-summary", "schedule": "0 0 * * *" }
+    { "path": "/api/shopify-summary", "schedule": "0 0 * * *" },
+    { "path": "/api/shopify-nudge", "schedule": "0 1 * * *" }
   ]
 }
