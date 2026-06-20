@@ -12,12 +12,13 @@ export const maxDuration = 60 // Gmail + Claude calls need more than the 10s def
 const ODDLE_LABEL = 'Label_4809783140171468475'
 const GBP_LABEL = 'Label_4736958937607554229'
 
-// Broad sender+subject matching (your "use all signals" choice). Tweak freely.
+// Broad sender+subject matching (your "use all signals" choice). Tuned to your real
+// senders: Oddle shows as "Oddle", Google Business shows as "Google Business Pro.". Tweak freely.
 const isOddle = (m: GmailMsg) => /oddle/i.test(m.from) || /oddle/i.test(m.subject)
 const isGBP = (m: GmailMsg) =>
-  /businessprofile|business profile/i.test(m.from) ||
+  /google business|business profile|businessprofile/i.test(m.from) ||
   /google business|business profile/i.test(m.subject) ||
-  (/google\.com/i.test(m.fromEmail) && /business/i.test(m.subject))
+  (/google\.com/i.test(m.fromEmail) && /(business|review)/i.test(m.subject))
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
