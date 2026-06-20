@@ -1,6 +1,8 @@
 {
   "crons": [
     { "path": "/api/digest", "schedule": "0 1 * * *" },
-    { "path": "/api/jarvis-oyen", "schedule": "0 9 * * *" }
+    { "path": "/api/jarvis-oyen", "schedule": "0 9 * * *" },
+    { "path": "/api/gmail-brief", "schedule": "0 0 * * *" },
+    { "path": "/api/gmail-brief", "schedule": "0 10 * * *" }
   ]
 }
