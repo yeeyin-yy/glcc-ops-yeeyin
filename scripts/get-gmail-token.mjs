@@ -9,7 +9,7 @@
 //
 // Safe to re-run. It only needs to succeed once.
 import http from 'node:http'
-import { readFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { exec } from 'node:child_process'
 
 const SCOPE = 'https://www.googleapis.com/auth/gmail.modify'
@@ -57,8 +57,18 @@ const server = http.createServer(async (req, res) => {
     if (tok.refresh_token) {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
       res.end('<h2>Done — close this tab and return to the terminal.</h2>')
-      console.log('\nOK  Your GMAIL_REFRESH_TOKEN (paste into .env and Vercel):\n')
-      console.log(tok.refresh_token + '\n')
+      // Write straight into .env so there is nothing to copy by hand.
+      try {
+        const envUrl = new URL('../.env', import.meta.url)
+        let txt = readFileSync(envUrl, 'utf8')
+        txt = /^GMAIL_REFRESH_TOKEN=.*$/m.test(txt)
+          ? txt.replace(/^GMAIL_REFRESH_TOKEN=.*$/m, `GMAIL_REFRESH_TOKEN=${tok.refresh_token}`)
+          : txt.replace(/\s*$/, '') + `\nGMAIL_REFRESH_TOKEN=${tok.refresh_token}\n`
+        writeFileSync(envUrl, txt)
+        console.log('\nOK  GMAIL_REFRESH_TOKEN saved to .env automatically. You can close the terminal.')
+      } catch {
+        console.log('\nOK  Your GMAIL_REFRESH_TOKEN (paste into .env):\n\n' + tok.refresh_token + '\n')
+      }
     } else {
       res.writeHead(200); res.end('No refresh_token returned. Re-run after revoking prior access.')
       console.error('\nX  No refresh_token returned. Google only sends one on first consent.\n', tok)
