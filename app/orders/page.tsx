@@ -1,4 +1,4 @@
-import { getShopifyOrders, money } from '@/lib/shopify-orders'
+import { getShopifyOrders, money, type ShopOrder } from '@/lib/shopify-orders'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,6 +14,19 @@ export default async function Orders() {
     ['Unfulfilled', unfulfilled],
   ]
 
+  // This-week revenue by brand (last 7 days). Currencies differ per brand, so we
+  // keep each brand's total in its own currency; bars are sized by order count.
+  const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString()
+  const week = orders.filter(o => (o.ordered_at ?? o.created_at) >= weekAgo)
+  const byBrand = new Map<string, { count: number; total: number; currency: string | null }>()
+  for (const o of week) {
+    const b = byBrand.get(o.brand) ?? { count: 0, total: 0, currency: o.currency }
+    b.count++; b.total += Number(o.total || 0); b.currency = o.currency
+    byBrand.set(o.brand, b)
+  }
+  const weekRows = [...byBrand.entries()].sort((a, b) => b[1].count - a[1].count)
+  const maxCount = Math.max(1, ...weekRows.map(([, v]) => v.count))
+
   return (
     <>
       <h1 className="ph">Orders</h1>
@@ -23,6 +36,23 @@ export default async function Orders() {
           <div className="stat" key={l}><p className="l">{l}</p><p className="v">{v}</p></div>
         ))}
       </div>
+
+      {weekRows.length > 0 && (
+        <div className="stat" style={{ marginBottom: 24 }}>
+          <p className="l" style={{ marginBottom: 12 }}>This week by brand · last 7 days</p>
+          {weekRows.map(([brand, v]) => (
+            <div key={brand} style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '8px 0' }}>
+              <div style={{ width: 140, flexShrink: 0, fontSize: 13 }}>{brand}</div>
+              <div style={{ flex: 1, minWidth: 0, height: 10, background: 'var(--surface2)', borderRadius: 6, overflow: 'hidden' }}>
+                <div style={{ width: `${(v.count / maxCount) * 100}%`, height: '100%', background: 'var(--amber)' }} />
+              </div>
+              <div style={{ width: 150, flexShrink: 0, textAlign: 'right', fontSize: 13 }}>
+                {v.count} · {money(v.total, v.currency)}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       {orders.length === 0 ? (
         <p className="empty">No orders yet. Once a store&apos;s webhook is connected, new orders show up here within seconds.</p>
       ) : (
