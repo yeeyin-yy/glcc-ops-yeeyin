@@ -4,6 +4,13 @@ export const dynamic = 'force-dynamic'
 
 const isUnf = (o: ShopOrder) => (o.fulfillment_status || 'unfulfilled') !== 'fulfilled'
 
+// Whole days since the order was placed — shown on unfulfilled orders so aging is visible.
+const daysWaiting = (o: ShopOrder) => {
+  if (!o.ordered_at) return null
+  const d = Math.floor((Date.now() - new Date(o.ordered_at).getTime()) / 86400000)
+  return d < 0 ? 0 : d
+}
+
 // Live Shopify orders, grouped into one section per brand (never mixed).
 export default async function Orders() {
   const orders = await getShopifyOrders(500)
@@ -65,6 +72,7 @@ export default async function Orders() {
                   <tbody>
                     {list.map(o => {
                       const u = isUnf(o)
+                      const dw = u ? daysWaiting(o) : null
                       return (
                         <tr key={o.id}>
                           <td data-label="Order">{o.order_name}</td>
@@ -72,7 +80,10 @@ export default async function Orders() {
                           <td data-label="Items">{o.item_summary || o.items}</td>
                           <td data-label="Total">{money(o.total, o.currency)}</td>
                           <td data-label="Payment"><span className={`pill ${o.financial_status === 'paid' ? 'paid' : 'pending'}`}>{o.financial_status ?? '—'}</span></td>
-                          <td data-label="Fulfilment"><span className={`pill ${u ? 'overdue' : 'done'}`}>{u ? 'unfulfilled' : 'fulfilled'}</span></td>
+                          <td data-label="Fulfilment">
+                            <span className={`pill ${u ? 'overdue' : 'done'}`}>{u ? 'unfulfilled' : 'fulfilled'}</span>
+                            {dw !== null ? <div style={{ fontSize: 12, marginTop: 3, color: dw >= 3 ? '#ff9b9b' : 'var(--muted)' }}>waiting {dw} day{dw === 1 ? '' : 's'}</div> : null}
+                          </td>
                           <td data-label="Date">{o.ordered_at ? o.ordered_at.slice(0, 10) : '—'}</td>
                         </tr>
                       )
