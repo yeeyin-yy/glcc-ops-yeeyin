@@ -64,11 +64,11 @@ export default async function Licensee() {
                   {list.map(r => (
                     <tr key={r.id}>
                       <td data-label="Licensee">{r.title}</td>
-                      <td data-label="Contact">
-                        <EditCell id={r.id} field="email" value={String(r.meta?.email ?? '')} placeholder="email" type="email" />
-                        <EditCell id={r.id} field="phone" value={String(r.meta?.phone ?? '')} placeholder="phone" />
+                      <td data-label="Contact" style={{ overflowWrap: 'anywhere' }}>
+                        <div>{m(r, 'email')}</div>
+                        <div style={{ color: 'var(--muted)', fontSize: 12 }}>{m(r, 'phone')}</div>
                       </td>
-                      <td data-label="Address"><EditCell id={r.id} field="address" value={String(r.meta?.address ?? '')} placeholder="address" multiline /></td>
+                      <td data-label="Address" style={{ maxWidth: 280, overflowWrap: 'anywhere' }}>{m(r, 'address')}</td>
                       <td data-label="Machines"><EditCell id={r.id} field="machines" value={String(r.meta?.machines ?? '')} placeholder="0" type="number" /></td>
                       <td data-label="Contract"><EditCell id={r.id} field="contract" value={String(r.meta?.contract ?? '')} placeholder="—" /></td>
                       <td data-label="Orders">{m(r, 'orders')}</td>
