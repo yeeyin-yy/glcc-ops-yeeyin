@@ -56,7 +56,7 @@ export default async function Licensee() {
               <table className="tbl">
                 <thead>
                   <tr>
-                    <th>Licensee</th><th>Contact</th><th>Address</th><th>Machines</th><th>Contract</th>
+                    <th>Licensee</th><th>Contact</th><th>Address</th><th>Machines</th>
                     <th>Orders</th><th>Spent</th><th>Last order</th><th>Status</th>
                   </tr>
                 </thead>
@@ -70,7 +70,6 @@ export default async function Licensee() {
                       </td>
                       <td data-label="Address" style={{ maxWidth: 280, overflowWrap: 'anywhere' }}>{m(r, 'address')}</td>
                       <td data-label="Machines"><EditCell id={r.id} field="machines" value={String(r.meta?.machines ?? '')} placeholder="0" type="number" /></td>
-                      <td data-label="Contract"><EditCell id={r.id} field="contract" value={String(r.meta?.contract ?? '')} placeholder="—" /></td>
                       <td data-label="Orders">{m(r, 'orders')}</td>
                       <td data-label="Spent">{money(r.meta?.spent, r.meta?.currency)}</td>
                       <td data-label="Last order">{m(r, 'last_order')}</td>
