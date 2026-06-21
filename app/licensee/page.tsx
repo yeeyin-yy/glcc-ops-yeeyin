@@ -36,7 +36,7 @@ export default async function Licensee() {
   return (
     <>
       <h1 className="ph">Licensee</h1>
-      <p className="cap">Built from real Shopify orders · contact, address, machines &amp; contract are editable</p>
+      <p className="cap">Built from real Shopify orders · grouped by brand · machines &amp; status are editable</p>
 
       <div className="grid">
         {cards.map(([l, v]) => (
@@ -47,7 +47,24 @@ export default async function Licensee() {
       {rows.length === 0 ? (
         <p className="empty">No licensees yet. They appear here once your Shopify orders are synced.</p>
       ) : (
-        brands.map(([brand, list]) => (
+        <>
+          {/* Per-brand overview (matches the Orders page). */}
+          <h2 className="ph" style={{ fontSize: 16, margin: '4px 0 10px' }}>By brand</h2>
+          <table className="tbl" style={{ marginBottom: 28 }}>
+            <thead><tr><th>Brand</th><th>Licensees</th><th>Orders</th><th>Spent</th></tr></thead>
+            <tbody>
+              {brands.map(([brand, list]) => (
+                <tr key={brand}>
+                  <td data-label="Brand">{brand}</td>
+                  <td data-label="Licensees">{list.length}</td>
+                  <td data-label="Orders">{list.reduce((s, r) => s + Number(r.meta?.orders || 0), 0)}</td>
+                  <td data-label="Spent">{money(list.reduce((s, r) => s + Number(r.meta?.spent || 0), 0), list[0].meta?.currency)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {brands.map(([brand, list]) => (
           <section key={brand} style={{ marginBottom: 30 }}>
             <h2 className="ph" style={{ fontSize: 16, margin: '0 0 10px' }}>
               {brand} <span style={{ color: 'var(--muted)', fontWeight: 400, fontSize: 14 }}>· {list.length} licensee{list.length > 1 ? 's' : ''}</span>
@@ -80,7 +97,8 @@ export default async function Licensee() {
               </table>
             </div>
           </section>
-        ))
+          ))}
+        </>
       )}
     </>
   )
