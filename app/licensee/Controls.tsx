@@ -72,8 +72,8 @@ export function OwnerSelect({ id, owner, owners }: { id: number; owner: string; 
 
 // Inline-editable free-text cell. Saves on blur or Enter; optimistic with revert.
 export function EditCell({
-  id, field, value, placeholder, type = 'text',
-}: { id: number; field: string; value: string; placeholder?: string; type?: string }) {
+  id, field, value, placeholder, type = 'text', multiline = false,
+}: { id: number; field: string; value: string; placeholder?: string; type?: string; multiline?: boolean }) {
   const [val, setVal] = useState(value || '')
   const [saved, setSaved] = useState(value || '')
   const [pending, start] = useTransition()
@@ -90,6 +90,21 @@ export function EditCell({
     })
   }
 
+  if (multiline) {
+    return (
+      <textarea
+        aria-label={field}
+        className="linp ltxt"
+        rows={2}
+        value={val}
+        placeholder={placeholder ?? '—'}
+        disabled={pending}
+        style={{ opacity: pending ? 0.6 : 1 }}
+        onChange={e => setVal(e.target.value)}
+        onBlur={commit}
+      />
+    )
+  }
   return (
     <input
       aria-label={field}

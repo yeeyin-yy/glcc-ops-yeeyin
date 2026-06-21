@@ -238,6 +238,8 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0
 }
 .linp::placeholder { color: var(--dim); }
 .linp:focus { outline: none; border-color: var(--amber); }
+/* Address uses a wrapping, auto-growing textarea so long addresses are fully visible. */
+.ltxt { resize: vertical; min-height: 46px; max-height: 160px; line-height: 1.35; field-sizing: content; }
 @media (max-width: 767px) {
   .lsel { font-size: 16px; min-height: 44px; padding: 8px 10px; }
   .linp { font-size: 16px; min-height: 44px; padding: 8px 10px; }

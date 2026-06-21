@@ -68,7 +68,7 @@ export default async function Licensee() {
                         <EditCell id={r.id} field="email" value={String(r.meta?.email ?? '')} placeholder="email" type="email" />
                         <EditCell id={r.id} field="phone" value={String(r.meta?.phone ?? '')} placeholder="phone" />
                       </td>
-                      <td data-label="Address"><EditCell id={r.id} field="address" value={String(r.meta?.address ?? '')} placeholder="address" /></td>
+                      <td data-label="Address"><EditCell id={r.id} field="address" value={String(r.meta?.address ?? '')} placeholder="address" multiline /></td>
                       <td data-label="Machines"><EditCell id={r.id} field="machines" value={String(r.meta?.machines ?? '')} placeholder="0" type="number" /></td>
                       <td data-label="Contract"><EditCell id={r.id} field="contract" value={String(r.meta?.contract ?? '')} placeholder="—" /></td>
                       <td data-label="Orders">{m(r, 'orders')}</td>
